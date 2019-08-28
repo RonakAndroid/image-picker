@@ -18,33 +18,43 @@ package com.chintansoni.imagepicker
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.chintansoni.imagepicker.SelectImageBottomSheetDialogFragment.Companion.TAG
 
 class ImagePicker(func: Configuration.() -> Unit = {}) {
 
     private val configuration = Configuration()
+    private val selectImageBottomSheetDialogFragment = SelectImageBottomSheetDialogFragment()
 
     init {
         configuration.apply(func)
     }
 
-    fun getImage(fragmentActivity: FragmentActivity, onSuccess: ImageOutput.() -> Unit): ImageTask {
-        val task = ImageTask().apply { onSuccess(onSuccess) }
-        SelectImageBottomSheetDialogFragment.newInstance(configuration).apply {
-            setListener(task)
-        }.show(fragmentActivity.supportFragmentManager, TAG)
-        return task
+    fun show(fragmentActivity: FragmentActivity, onSuccess: (ImageOutput) -> Unit): ImageTask {
+        return show(fragmentActivity.supportFragmentManager, onSuccess)
     }
 
-    fun getImage(fragment: Fragment, onSuccess: ImageOutput.() -> Unit): ImageTask {
+    fun show(fragment: Fragment, onSuccess: (ImageOutput) -> Unit): ImageTask {
+        return show(fragment.childFragmentManager, onSuccess)
+    }
+
+    private fun show(
+        fragmentManager: FragmentManager,
+        onSuccess: (ImageOutput) -> Unit
+    ): ImageTask {
         val task = ImageTask().apply { onSuccess(onSuccess) }
-        SelectImageBottomSheetDialogFragment.newInstance(configuration).apply {
+        selectImageBottomSheetDialogFragment.apply {
+            setConfiguration(configuration)
             setListener(task)
-        }.show(fragment.childFragmentManager, TAG)
+        }.show(fragmentManager, TAG)
         return task
     }
 
     fun configure(func: Configuration.() -> Unit) {
         configuration.apply(func)
+    }
+
+    fun clearCache() {
+
     }
 }

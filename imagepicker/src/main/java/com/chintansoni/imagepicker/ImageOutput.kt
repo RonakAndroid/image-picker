@@ -18,9 +18,9 @@ package com.chintansoni.imagepicker
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.core.content.FileProvider
+import com.chintansoni.imagepicker.util.BitmapDecodeAsyncTask
 import java.io.File
 
 /*
@@ -31,14 +31,16 @@ import java.io.File
 class ImageOutput internal constructor(context: Context, private val file: File) {
 
     private val fileUri: Uri by lazy {
-        FileProvider.getUriForFile(context, context.packageName + ".fileprovider", file)
+        FileProvider.getUriForFile(context, context.packageName + ".imagepicker.fileprovider", file)
     }
 
-    fun getUri(): Uri = fileUri
+    fun asUri(): Uri = fileUri
 
-    fun getBitmap(): Bitmap = BitmapFactory.decodeFile(file.absolutePath)
+    fun asBitmap(func: (Bitmap?) -> Unit) {
+        BitmapDecodeAsyncTask(func).execute(file)
+    }
 
-    fun getFile(): File {
+    fun asFile(): File {
         return file
     }
 }

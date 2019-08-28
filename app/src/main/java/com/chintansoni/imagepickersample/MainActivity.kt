@@ -17,26 +17,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onImageAsFileClick(view: View) {
-        imagePicker.getImage(this) {
+        imagePicker.show(this) { image ->
             Log.e("MainActivity", "Received Result")
             Glide
-                .with(this@MainActivity)
-                .load(getFile())
+                .with(this)
+                .load(image.asFile())
                 .into(imageView)
         }.onFailure {
             Log.e("MainActivity", it.message)
         }
-
-        imagePicker.getImage(this) {
-
-        }
     }
 
     fun onImageAsUriClick(view: View) {
-        imagePicker.getImage(this) {
+        imagePicker.show(this) { image ->
             Glide
-                .with(this@MainActivity)
-                .load(getUri())
+                .with(this)
+                .load(image.asUri())
                 .into(imageView)
         }.onFailure {
             Log.e("MainActivity", it.message)
@@ -44,11 +40,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onImageAsBitmapClick(view: View) {
-        imagePicker.getImage(this) {
-            Glide
-                .with(this@MainActivity)
-                .load(getBitmap())
-                .into(imageView)
+        imagePicker.show(this) { image ->
+            image.asBitmap {
+                Glide
+                    .with(this)
+                    .load(it)
+                    .into(imageView)
+            }
         }.onFailure {
             Log.e("MainActivity", it.message)
         }
